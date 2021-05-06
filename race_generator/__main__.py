@@ -1,8 +1,8 @@
 import race_generator
-from race_generator import run_generator
+from race_generator import race_generator
 
 def main():
-    run_generator()
+    race_generator.run()
 
 if __name__ == '__main__':
     main()
