@@ -49,6 +49,14 @@ def get_time_list(total, speed):
     
     return time_list
 
+def create_folder(path):
+    try:
+        os.mkdir(path)
+    except OSError:
+        print ("Creation of the directory %s failed" % path)
+    else:
+        print ("Successfully created the directory %s " % path)    
+
 def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_miles, target_speed, number_of_legs, end_1st_leg=0):
     # Create the spreadsheet 
     # filename = r"C:\Users\AIOTIK-005\Desktop\Route_created.xlsx"
@@ -111,8 +119,11 @@ def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_mil
     filename = str(input("Enter the name for the spreadsheet: "))
     filepath = user + "\Desktop\\" + filename + r'.xlsx'
     # filepath = r"C:\Users\\" + getpass.getuser() +  r"\Desktop\\" + filename + r".xlsx"
-    print(f"filepath = {filepath}")
-    book.save(filepath)
+    folder_name = 'race_data'
+    create_folder(folder_name)
+    path = os.getcwd() + '\\' + folder_name + '\\' + filename + r'.xlsx'
+    print(f"Your file location is here: {path}")
+    book.save(path)
 
 def calculate_pulses(tire_size):
     return (63360 / tire_size) / 2         # rotations per mile = (mile in inches / tire circumference) 
@@ -177,65 +188,74 @@ def calculate_list_pulses(total_pulses, distance_size):
 
 
 # main application
-def run_generator(): 
+def run(): 
+    try:
+        # a warning message 
+        print("////////////////////////////////////////////////////")
+        print("PLEASE, CLOSE ANY EXCEL FILE RELATED TO THIS PROGRAM")
+        print("////////////////////////////////////////////////////\n")
+        
+        # in miles get the user data input 
+        tire_size = float(input("Input the tire size (inches): "))
+        total_length = float(input("Input total race length (miles): "))
+        my_speed = float(input("Input target speed (mph): "))
+        number_of_legs = int(input("Input the number of legs (1 or 2) depending of the type of race: "))
+        
+        # get mile and time list generated 
+        mile_list = get_miles_list(total_length)
+        timer_list = get_time_list(len(mile_list), my_speed)
+        
+        feet_distance = convert_miles_to_feet(total_length)
+        inches_distance = convert_feet_to_inch(feet_distance)
+        tire_rotation = calculate_tire_rotation_from_feet(inches_distance, tire_size)
+        total_pulses = calculate_total_pulses(tire_rotation)
+        distance_size = len(mile_list)
+        minimum_pulse = calculate_minimum_pulse(total_pulses, distance_size)
+        # list_pulses = 
+        print("================================")
+        print(f"distance in feet = {feet_distance}")
+        print(f"distance in inch = {inches_distance}")
+        print(f"tire rotation in inch = {tire_rotation}")
+        print(f"total tire rotation = {total_pulses}")
+        print(f"minimum pulse = {minimum_pulse}")
+        
+        calculate_list_pulses(minimum_pulse, distance_size)
+        # print(f"number of cells {len(mile_list)}")
+        # calculate_list_pulses(total_pulses, mile_list)
+        print("================================")
+        pulses = calculate_pulses(tire_size)
+        
+        if number_of_legs == 1:
+            # calculate pulses and get the pulses list
+            p_list = get_pulses_list(pulses, len(mile_list))
 
-    # a warning message 
-    print("////////////////////////////////////////////////////")
-    print("PLEASE, CLOSE ANY EXCEL FILE RELATED TO THIS PROGRAM")
-    print("////////////////////////////////////////////////////\n")
-    
-    # in miles get the user data input 
-    tire_size = float(input("Input the tire size (inches): "))
-    total_length = float(input("Input total race length (miles): "))
-    my_speed = float(input("Input target speed (mph): "))
-    number_of_legs = int(input("Input the number of legs (1 or 2) depending of the type of race: "))
-    
-    # get mile and time list generated 
-    mile_list = get_miles_list(total_length)
-    timer_list = get_time_list(len(mile_list), my_speed)
-    
-    feet_distance = convert_miles_to_feet(total_length)
-    inches_distance = convert_feet_to_inch(feet_distance)
-    tire_rotation = calculate_tire_rotation_from_feet(inches_distance, tire_size)
-    total_pulses = calculate_total_pulses(tire_rotation)
-    distance_size = len(mile_list)
-    minimum_pulse = calculate_minimum_pulse(total_pulses, distance_size)
-    # list_pulses = 
-    print("================================")
-    print(f"distance in feet = {feet_distance}")
-    print(f"distance in inch = {inches_distance}")
-    print(f"tire rotation in inch = {tire_rotation}")
-    print(f"total tire rotation = {total_pulses}")
-    print(f"minimum pulse = {minimum_pulse}")
-    
-    calculate_list_pulses(minimum_pulse, distance_size)
-    # print(f"number of cells {len(mile_list)}")
-    # calculate_list_pulses(total_pulses, mile_list)
-    print("================================")
-    pulses = calculate_pulses(tire_size)
-    
-    if number_of_legs == 1:
-        # calculate pulses and get the pulses list
-        p_list = get_pulses_list(pulses, len(mile_list))
+            # save the data into an spreadsheet
+            save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs)
+            print("\n////////////////////////////////////////////////////")
+            print("SPREADSHEET CREATED, NOW THIS WINDOW IS ABLE TO BE CLOSED")
+            print("////////////////////////////////////////////////////\n")
+            input("Enter any key to exit")
+        elif number_of_legs == 2:
+            # calculate pulses and get the pulses list
+            distance_end_1st_leg = float(input("Enter distance of the end of 1st leg (miles): "))
+            distance_end_1st_leg = get_pulse_by_distance(pulses, distance_end_1st_leg)
+            p_list = get_pulses_list(pulses, len(mile_list))
+            # save the data into an spreadsheet
+            save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_end_1st_leg)
+            print("\n////////////////////////////////////////////////////")
+            print("SPREADSHEET CREATED, NOW THIS WINDOW IS ABLE TO BE CLOSED")
+            print("////////////////////////////////////////////////////\n")
+            input("Enter any key to exit")
 
-        # save the data into an spreadsheet
-        save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs)
-    elif number_of_legs == 2:
-        # calculate pulses and get the pulses list
-        distance_end_1st_leg = float(input("Enter distance of the end of 1st leg (miles): "))
-        distance_end_1st_leg = get_pulse_by_distance(pulses, distance_end_1st_leg)
-        p_list = get_pulses_list(pulses, len(mile_list))
-        # save the data into an spreadsheet
-        save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_end_1st_leg)
-    else:
-        print("please Input a number of legs valid: (1 o 2)")
-        exit()
-    
+        else:
+            print("please Input a number of legs valid: (1 o 2)")
+            exit()
+    except PermissionError:
+        print("There's a spreadsheet with the same name in the same location")
+        input("choose another name and try again. \nPress any key to terminate this program.")
+
 
 
 # run the application
-run_generator()
-print("\n////////////////////////////////////////////////////")
-print("SPREADSHEET CREATED, NOW THIS WINDOW IS ABLE TO BE CLOSED")
-print("////////////////////////////////////////////////////\n")
-input("Enter any key to exit")
+# run()
+print(os.getcwd())
