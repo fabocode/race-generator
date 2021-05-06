@@ -177,7 +177,7 @@ def calculate_list_pulses(total_pulses, distance_size):
 
 
 # main application
-def main(): 
+def run_generator(): 
 
     # a warning message 
     print("////////////////////////////////////////////////////")
@@ -234,9 +234,8 @@ def main():
 
 
 # run the application
-main()
+run_generator()
 print("\n////////////////////////////////////////////////////")
 print("SPREADSHEET CREATED, NOW THIS WINDOW IS ABLE TO BE CLOSED")
 print("////////////////////////////////////////////////////\n")
 input("Enter any key to exit")
-exit()
