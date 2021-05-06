@@ -1,5 +1,6 @@
 *.pyc
 
+race_data/
 env/
 dist/
 build/
@@ -7,3 +8,4 @@ build/
 
 .tox/
 .coverage
+race_generator.spec
