@@ -53,9 +53,9 @@ def create_folder(path):
     try:
         os.mkdir(path)
     except OSError:
-        print ("Creation of the directory %s failed" % path)
+        pass
     else:
-        print ("Successfully created the directory %s " % path)    
+        pass 
 
 def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_miles, target_speed, number_of_legs, end_1st_leg=0):
     # Create the spreadsheet 
@@ -199,19 +199,9 @@ def get_pulses_in_leg(distance, tire_size, total_miles, add_more_pulses=0):
     inches_distance = convert_feet_to_inch(distance)
     tire_rotation = calculate_tire_rotation_from_feet(inches_distance, tire_size)
     total_pulses = calculate_total_pulses(tire_rotation)
-    # distance_size = len(mile_list)
     minimum_pulse = calculate_minimum_pulse(total_pulses, total_miles)
-    # list_pulses = 
-    # print("================================")
-    # print(f"distance in feet = {distance:,}")
-    # print(f"distance in inch = {inches_distance:,}")
-    # print(f"tire rotation in inch = {tire_rotation:,}")
-    # print(f"total tire rotation = {total_pulses:,}")
-    # print(f"minimum pulse = {minimum_pulse}")
     total_miles = int(total_miles)
-    print(f" = {total_miles}")
     pulses = calculate_list_pulses(minimum_pulse, total_miles, add_more_pulses)
-    # print("================================")
     return pulses
 
 # main application
@@ -283,7 +273,6 @@ def run():
             # calculate pulses and get the pulses list
             p_list = pulse_list
 
-            print(len(p_list))
             # save the data into an spreadsheet
             save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_1st_leg)
             print("\n////////////////////////////////////////////////////")
