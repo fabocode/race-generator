@@ -66,7 +66,7 @@ def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_mil
     # number of legs
     ws['D1'] = "Number of Legs"
     ws['D2'] = int(number_of_legs)
-    ws['E1'] = "End of 1st Leg"
+    ws['E1'] = "End of 1st Leg (feet)"
     ws['E2'] = int(end_1st_leg)
 
     # Reference
