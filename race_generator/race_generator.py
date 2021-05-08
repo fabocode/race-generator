@@ -57,7 +57,7 @@ def create_folder(path):
     else:
         pass 
 
-def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_miles, target_speed, number_of_legs, end_1st_leg=0):
+def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_miles, target_speed, number_of_legs, end_1st_leg=0, end_2nd_leg=0):
     # Create the spreadsheet 
     # filename = r"C:\Users\AIOTIK-005\Desktop\Route_created.xlsx"
     book = Workbook()
@@ -68,6 +68,9 @@ def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_mil
     ws['D2'] = int(number_of_legs)
     ws['E1'] = "End of 1st Leg (feet)"
     ws['E2'] = int(end_1st_leg)
+    ws['F1'] = "End of 2st Leg (feet)"
+    ws['F2'] = int(end_2nd_leg)
+
 
     # Reference
     ws['H1'] = "REF"
@@ -88,6 +91,7 @@ def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_mil
     ws.column_dimensions['C'].width = 22
     ws.column_dimensions['D'].width = 22
     ws.column_dimensions['E'].width = 22
+    ws.column_dimensions['F'].width = 22
     # set sheet name 
     ws.append(["PULSES", "TIME", "MILES"])
 
@@ -177,13 +181,15 @@ def calculate_total_pulses(tire_rotation):
     return tire_rotation * 5
 
 def calculate_minimum_pulse(total_pulses, distance_size):
-    return total_pulses / distance_size
+    # result = str(total_pulses / distance_size)
+    # result = int(result[:result.index('.')])
+    return (total_pulses / distance_size)
 
 def calculate_list_pulses(total_pulses, distance_size, more_pulses=0):
     pulse_list = []
     for index in range(distance_size + 1):
         # if index != 0:
-        conversion = round((total_pulses * index) + more_pulses, 2)
+        conversion = int((total_pulses * index) + more_pulses)
         pulse_list.append(conversion)
         # print(f"pulse: {index} {total_pulses} * {index} = {pulse_list[index-1]}")
     
@@ -266,15 +272,19 @@ def run():
             
             pulse_list.remove(0)
             pulse_list.remove(pulse_list[-1])
-
+            for i in pulse_list:
+                print(i)
+            print("==============================================================")
             pulse_list.extend(get_pulses_in_leg(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses))
             total_pulses += get_total_pulses(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses)
                 
+            for i in pulse_list:
+                print(i)
             # calculate pulses and get the pulses list
             p_list = pulse_list
 
             # save the data into an spreadsheet
-            save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_1st_leg)
+            save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_1st_leg, distance_2st_leg)
             print("\n////////////////////////////////////////////////////")
             print("SPREADSHEET CREATED, NOW THIS WINDOW IS ABLE TO BE CLOSED")
             print("////////////////////////////////////////////////////\n")
