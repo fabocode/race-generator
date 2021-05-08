@@ -223,16 +223,10 @@ def run():
         print("////////////////////////////////////////////////////\n")
         
         # in miles get the user data input 
-        tire_size = 81.6
-        total_length = 118.0
-        my_speed = 130.0
-        number_of_legs = 2
-        # tire_size = float(input("Input the tire size (inches): "))
-        # total_length = float(input("Input total race length (miles): "))
-        # my_speed = float(input("Input target speed (mph): "))
-        # number_of_legs = int(input("Input the number of legs (1 or 2) depending of the type of race: "))
-        
-        # distance_2st_leg = float(input("Input the end of 2nd leg (feet): "))
+        tire_size = float(input("Input the tire size (inches): "))
+        total_length = float(input("Input total race length (miles): "))
+        my_speed = float(input("Input target speed (mph): "))
+        number_of_legs = int(input("Input the number of legs (1 or 2) depending of the type of race: "))
         
         # get mile and time list generated 
         mile_list = get_miles_list(total_length)
@@ -274,34 +268,20 @@ def run():
             print("////////////////////////////////////////////////////\n")
             input("Enter any key to exit")
         elif number_of_legs == 2:
-            distance_1st_leg = 311221.0
-            distance_2st_leg = 311256.0
-            # distance_1st_leg = float(input("Input the end of 1st leg (feet): "))
-            # distance_2st_leg = float(input("Input the end of 2nd leg (feet): "))
+            distance_1st_leg = float(input("Input the end of 1st leg (feet): "))
+            distance_2st_leg = float(input("Input the end of 2st leg (feet): "))
 
-            print("Data for Leg 1: ")
             pulse_list = get_pulses_in_leg(distance_1st_leg, tire_size, len(mile_list)/2)
             total_pulses = get_total_pulses(distance_1st_leg, tire_size, len(mile_list)/2)
             
-            # for i in pulse_list:
-            #     print(i)
             pulse_list.remove(0)
             pulse_list.remove(pulse_list[-1])
 
-            print("Data for Leg 2: ")
             pulse_list.extend(get_pulses_in_leg(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses))
             total_pulses += get_total_pulses(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses)
-            for i, x in enumerate(pulse_list):
-                print(i, x)
                 
             # calculate pulses and get the pulses list
-            # distance_end_1st_leg = float(input("Enter distance of the end of 1st leg (miles): "))
-            # distance_end_1st_leg = get_pulse_by_distance(pulses, distance_end_1st_leg)
-            # p_list = get_pulses_list(pulses, len(mile_list))
-
             p_list = pulse_list
-            # for i in p_list:
-            #     print(i)
 
             print(len(p_list))
             # save the data into an spreadsheet
@@ -318,27 +298,4 @@ def run():
         print("There's a spreadsheet with the same name in the same location")
         input("choose another name and try again. \nPress any key to terminate this program.")
 
-
-if __name__ == '__main__':
-    # in miles get the user data input 
-    tire_size = float(input("Input the tire size (inches): "))
-    total_length = float(input("Input total race length (miles): "))
-    my_speed = float(input("Input target speed (mph): "))
-    # number_of_legs = int(input("Input the number of legs (1 or 2) depending of the type of race: "))
-    distance_1st_leg = float(input("Input the end of 1st leg (feet): "))
-    distance_2st_leg = float(input("Input the end of 2nd leg: "))
-    
-    pulse_list = []
-    # get mile and time list generated 
-    mile_list = get_miles_list(total_length)
-    timer_list = get_time_list(len(mile_list), my_speed)
-    print("Data for Leg 1: ")
-    pulse_list = get_pulses_in_leg(distance_1st_leg, tire_size, len(mile_list)/2)
-    total_pulses = get_total_pulses(distance_1st_leg, tire_size, len(mile_list)/2)
-    print("Data for Leg 2: ")
-    pulse_list.extend(get_pulses_in_leg(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses))
-    total_pulses += get_total_pulses(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses)
-    print(f"total pulses in the race: {total_pulses}")
-    for i in pulse_list:
-        print(i)
 
