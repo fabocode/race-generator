@@ -181,17 +181,13 @@ def calculate_total_pulses(tire_rotation):
     return tire_rotation * 5
 
 def calculate_minimum_pulse(total_pulses, distance_size):
-    # result = str(total_pulses / distance_size)
-    # result = int(result[:result.index('.')])
     return (total_pulses / distance_size)
 
 def calculate_list_pulses(total_pulses, distance_size, more_pulses=0):
     pulse_list = []
     for index in range(distance_size + 1):
-        # if index != 0:
         conversion = int((total_pulses * index) + more_pulses)
         pulse_list.append(conversion)
-        # print(f"pulse: {index} {total_pulses} * {index} = {pulse_list[index-1]}")
     
     return pulse_list
 
@@ -234,18 +230,7 @@ def run():
         total_pulses = calculate_total_pulses(tire_rotation)
         distance_size = len(mile_list)
         minimum_pulse = calculate_minimum_pulse(total_pulses, distance_size)
-        # list_pulses = 
-        # print("================================")
-        # print(f"distance in feet = {feet_distance}")
-        # print(f"distance in inch = {inches_distance}")
-        # print(f"tire rotation in inch = {tire_rotation}")
-        # print(f"total tire rotation = {total_pulses}")
-        # print(f"minimum pulse = {minimum_pulse}")
-        
-        # calculate_list_pulses(minimum_pulse, distance_size)
-        # print(f"number of cells {len(mile_list)}")
-        # calculate_list_pulses(total_pulses, mile_list)
-        # print("================================")
+
         pulses = calculate_pulses(tire_size)
         
         if number_of_legs == 1:
@@ -272,14 +257,9 @@ def run():
             
             pulse_list.remove(0)
             pulse_list.remove(pulse_list[-1])
-            for i in pulse_list:
-                print(i)
-            print("==============================================================")
             pulse_list.extend(get_pulses_in_leg(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses))
             total_pulses += get_total_pulses(distance_2st_leg, tire_size, len(mile_list)/2, total_pulses)
                 
-            for i in pulse_list:
-                print(i)
             # calculate pulses and get the pulses list
             p_list = pulse_list
 
