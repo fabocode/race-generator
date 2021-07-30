@@ -5,17 +5,17 @@ A Python program to take user inputs to generate waypoints in pulses/gps for rac
 
 # Installation
 
-If you don't use `pipsi`, you're missing out.
-Here are [installation instructions](https://github.com/mitsuhiko/pipsi#readme).
+It's required to run the following command to install a prerequisite `openpyxl` module
 
-Simply run:
-
-    $ pipsi install .
-
+    $ pip install -r requirements.txt
 
 # Usage
 
 To use it:
 
-    $ race-generator --help
+    $ python cli.py
+
+or if you use python3:
+
+    $ python3 cli.py
 
