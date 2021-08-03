@@ -1,8 +1,7 @@
-import openpyxl, os 
+import openpyxl, os, datetime
+from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl import Workbook
-import datetime
-import time 
-import getpass 
+from win32com.client import Dispatch
 
 def count_time(start):
     time_sec = start
@@ -128,7 +127,22 @@ def save_list_in_excel(pulse_list, target_list, mile_list, tire_size, target_mil
     create_folder(folder_name)
     path = os.getcwd() + '\\' + folder_name + '\\' + filename + r'.xlsx'
     print(f"Your file location is here: {path}")
-    book.save(path)
+    book.save(path) # save the spreadsheet generated
+    just_open(path) # open the spreadsheet, save and generate the formula data for race
+
+def just_open(path):
+    """
+                Simulate opening the excel sheet manually
+                :param strFileName: opened excel file name (suffix.xlsx format)
+    """
+    try:
+        xlApp = Dispatch("Excel.Application")
+        xlApp.Visible = False
+        xlBook = xlApp.Workbooks.Open(path)
+        xlBook.Save()
+        xlBook.Close()
+    except:
+        print("Please open %s manually, modify a blank value and save it at will" % path)
 
 def calculate_pulses(tire_size):
     return (63360 / tire_size) / 2         # rotations per mile = (mile in inches / tire circumference) 
