@@ -1,4 +1,4 @@
-import openpyxl, os, datetime
+import openpyxl, os, datetime, math
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl import Workbook
 from win32com.client import Dispatch
@@ -208,20 +208,32 @@ def calculate_list_pulses(total_pulses, distance_size, more_pulses=0):
 def get_total_pulses(distance, tire_size, total_miles, add_more_pulses=0):
     inches_distance = convert_feet_to_inch(distance)
     tire_rotation = calculate_tire_rotation_from_feet(inches_distance, tire_size)
-    total_pulses = calculate_total_pulses(tire_rotation)
+    total_pulses = int(calculate_total_pulses(tire_rotation))
     return total_pulses 
 
-def get_pulses_in_leg(distance, tire_size, total_miles, add_more_pulses=0):
-    inches_distance = convert_feet_to_inch(distance)
-    tire_rotation = calculate_tire_rotation_from_feet(inches_distance, tire_size)
-    total_pulses = calculate_total_pulses(tire_rotation)
-    minimum_pulse = calculate_minimum_pulse(total_pulses, total_miles)
-    total_miles = int(total_miles)
-    pulses = calculate_list_pulses(minimum_pulse, total_miles, add_more_pulses)
-    return pulses
-
 def get_mile_from_feet_times_ten(feet):
-    return int( feet / 5280 ) * 10
+    return round( (feet / 5280 ) * 10)
+
+def get_pulses_in_leg(distance, tire_size, leg_length, add_more_pulses=0, more_pulses=0):
+    # 1. get the total pulses for the end of leg 
+    total_pulses = round(((distance * 12) / tire_size) * 5)
+    min_pulse = ((total_pulses) / leg_length) 
+    pulses = []
+    if add_more_pulses == 0:
+        for item in range(1, leg_length):
+            pulse = ((min_pulse) * (item))
+            pulses.append(pulse)
+        # append the last 1st leg 
+        pulses.append(total_pulses)
+    else:
+        n = add_more_pulses
+        limit = n + leg_length
+        while n < limit:
+            n += 1
+            pulse = (min_pulse * (n - add_more_pulses)  + more_pulses)
+            pulses.append(pulse)
+
+    return pulses
 
 # main application
 def run(): 
@@ -237,36 +249,25 @@ def run():
         my_speed = float(input("Input target speed (mph): "))
         number_of_legs = int(input("Input the number of legs (1 or 2) depending of the type of race: "))
         
+        
         # get mile and time list generated 
         mile_list = get_miles_list(total_length)
         timer_list = get_time_list(len(mile_list), my_speed)
-        
-        feet_distance = convert_miles_to_feet(total_length)
-        inches_distance = convert_feet_to_inch(feet_distance)
-        tire_rotation = calculate_tire_rotation_from_feet(inches_distance, tire_size)
-        total_pulses = calculate_total_pulses(tire_rotation)
-        distance_size = len(mile_list)
-        minimum_pulse = calculate_minimum_pulse(total_pulses, distance_size)
 
-        pulses = calculate_pulses(tire_size)
         
         if number_of_legs == 1:
             distance_1st_leg = float(input("Input the end of 1st leg (feet): "))
-            total_miles = int( distance_1st_leg * 52800 ) # conver to miles and times 10 for the spreadsheet
-
-            # calculate pulses and get the pulses list
-            p_list = get_pulses_list(pulses, len(mile_list))
-
-            pulse_list = get_pulses_in_leg(distance_1st_leg, tire_size, total_miles)
-            total_pulses = get_total_pulses(distance_1st_leg, tire_size, total_miles)
+            total_miles_1st_leg = get_mile_from_feet_times_ten(distance_1st_leg) # convert to miles and times 10 for the spreadsheet
+            pulse_list = get_pulses_in_leg(distance_1st_leg, tire_size, total_miles_1st_leg)
 
             # save the data into an spreadsheet
-            save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs)
+            save_list_in_excel(pulse_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs)
             print("\n////////////////////////////////////////////////////")
             print("SPREADSHEET CREATED, NOW THIS WINDOW IS ABLE TO BE CLOSED")
             print("////////////////////////////////////////////////////\n")
             input("Enter any key to exit")
         elif number_of_legs == 2:
+            
             distance_1st_leg = float(input("Input the end of 1st leg (feet): "))
             distance_2nd_leg = float(input("Input the end of 2st leg (feet): "))
 
@@ -275,17 +276,13 @@ def run():
 
             pulse_list = get_pulses_in_leg(distance_1st_leg, tire_size, total_miles_1st_leg)
             total_pulses = get_total_pulses(distance_1st_leg, tire_size, total_miles_1st_leg)
-            
-            pulse_list.remove(0)
-            pulse_list.remove(pulse_list[-1])
-            pulse_list.extend(get_pulses_in_leg(distance_2nd_leg, tire_size, total_miles_2nd_leg, total_pulses))
-            total_pulses += get_total_pulses(distance_2nd_leg, tire_size, total_miles_2nd_leg, total_pulses)
-                
-            # calculate pulses and get the pulses list
-            p_list = pulse_list
 
-            # # save the data into an spreadsheet
-            save_list_in_excel(p_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_1st_leg, distance_2nd_leg)
+            pulses_2nd_leg = get_pulses_in_leg(distance_2nd_leg, tire_size, total_miles_2nd_leg, total_miles_1st_leg, total_pulses)
+            pulse_list.extend(pulses_2nd_leg)
+            # remove the float point 
+            pulse_list = ([int(p) for p in pulse_list])
+            # save the data into an spreadsheet
+            save_list_in_excel(pulse_list, timer_list, mile_list, tire_size, total_length, my_speed, number_of_legs, distance_1st_leg, distance_2nd_leg)
             print("\n////////////////////////////////////////////////////")
             print("SPREADSHEET CREATED, NOW THIS WINDOW IS ABLE TO BE CLOSED")
             print("////////////////////////////////////////////////////\n")
