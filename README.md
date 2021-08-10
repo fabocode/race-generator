@@ -21,6 +21,6 @@ or if you use python3:
 
 # Tip to Generate an executable version
 
-Call `pyinstaller` with `--path` argument to add the installed modules in the virtual environment on windows 10:
+Call `pyinstaller` with `--paths` argument to add the installed modules in the virtual environment on windows 10:
 
     $ pyinstaller --onefile --name race_generator --paths=C:\Users\{your_python_path}\env\Lib\site-packages cli.py
