@@ -212,7 +212,15 @@ def get_total_pulses(distance, tire_size, total_miles, add_more_pulses=0):
     return total_pulses 
 
 def get_mile_from_feet_times_ten(feet):
-    return round( (feet / 5280 ) * 10)
+    value =  feet / 5280
+    val_rounded = round(value)
+    result = abs(value - val_rounded)
+    if result >= 0.1:
+        return round( (feet / 5280 ) * 10)
+    else:
+        return val_rounded * 10
+
+
 
 def get_pulses_in_leg(distance, tire_size, leg_length, add_more_pulses=0, more_pulses=0):
     # 1. get the total pulses for the end of leg 
@@ -273,7 +281,7 @@ def run():
 
             total_miles_1st_leg = get_mile_from_feet_times_ten(distance_1st_leg) # convert to miles and times 10 for the spreadsheet
             total_miles_2nd_leg = get_mile_from_feet_times_ten(distance_2nd_leg) # convert to miles and times 10 for the spreadsheet
-
+            print(f"total miles 1 {total_miles_1st_leg} total miles 2 {total_miles_2nd_leg}")
             pulse_list = get_pulses_in_leg(distance_1st_leg, tire_size, total_miles_1st_leg)
             total_pulses = get_total_pulses(distance_1st_leg, tire_size, total_miles_1st_leg)
 
